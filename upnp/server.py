@@ -24,6 +24,7 @@ import SocketServer
 
 
 class DlnaRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+
     def __init__(self, *args):
         try:
             BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args)

@@ -21,10 +21,11 @@ import os
 import subprocess
 import logging
 import functools
-import upnp.renderer
+from . import upnp.renderer
 
 
 class PulseAudio(object):
+
     def __init__(self):
         self.streams = []
         self.sinks = []
@@ -143,7 +144,7 @@ class PulseSink(object):
         if hasattr(self, 'entity') is False:
             self.entity = None
 
-        self.monitor = self.name+'.monitor'
+        self.monitor = self.name + '.monitor'
         self.streams = []
 
     def __eq__(self, other):
@@ -194,6 +195,7 @@ class PulseStream(object):
 
 
 class PulseUpnpBridge(object):
+
     def __init__(self, sink, upnp_device):
         self.sink = sink
         self.upnp_device = upnp_device
@@ -210,6 +212,7 @@ class PulseUpnpBridge(object):
 
 
 class PulseWatcher(PulseAudio):
+
     def __init__(self):
         PulseAudio.__init__(self)
 
