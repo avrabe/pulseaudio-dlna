@@ -21,7 +21,7 @@ import os
 import subprocess
 import logging
 import functools
-from . import upnp.renderer
+import upnp.renderer
 
 
 class PulseAudio(object):

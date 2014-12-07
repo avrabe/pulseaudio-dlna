@@ -22,7 +22,7 @@ import urlparse
 import socket
 import functools
 import BeautifulSoup
-from . import pulseaudio
+import pulseaudio
 
 
 @functools.total_ordering

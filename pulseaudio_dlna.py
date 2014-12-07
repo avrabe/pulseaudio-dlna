@@ -44,9 +44,9 @@ import threading
 
 
 import docopt
-from . import upnp.discover
-from . import upnp.server
-from . import pulseaudio
+import upnp.discover
+import upnp.server
+import pulseaudio
 
 
 def main():
