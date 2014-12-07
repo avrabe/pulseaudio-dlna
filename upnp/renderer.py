@@ -22,7 +22,7 @@ import urlparse
 import socket
 import functools
 import BeautifulSoup
-import pulseaudio
+from . import pulseaudio
 
 
 @functools.total_ordering
@@ -120,7 +120,8 @@ class UpnpMediaRenderer(object):
         url = self._get_av_transport_url()
         headers = {
             'Content-Type': 'text/xml',
-            'SOAPAction': '"urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI"',
+            'SOAPAction':
+                '"urn:schemas-upnp-org:service:AVTransport:1#SetAVTransportURI"',
         }
         metadata = self.REGISTER_XML_METADATA.format(
             stream_url=stream_url,
@@ -190,6 +191,7 @@ class UpnpMediaRenderer(object):
 
 
 class CoinedUpnpMediaRenderer(UpnpMediaRenderer):
+
     def __init__(self, *args):
         UpnpMediaRenderer.__init__(self, *args)
         self.server_url = None
@@ -214,8 +216,9 @@ class CoinedUpnpMediaRenderer(UpnpMediaRenderer):
 
 
 class UpnpMediaRendererFactory(object):
+
     @classmethod
-    def from_header(self, header, type_=UpnpMediaRenderer):
+    def from_header(self, address, header, type_=UpnpMediaRenderer):
         header = re.findall(r"(?P<name>.*?): (?P<value>.*?)\r\n", header)
         header = {k.lower(): v for k, v in dict(header).items()}
         if header['location']:
@@ -223,6 +226,7 @@ class UpnpMediaRendererFactory(object):
             url_object = urlparse.urlparse(location)
             ip, port = url_object.netloc.split(':')
             response = requests.get(location)
+            (ip, port) = address
             soup = BeautifulSoup.BeautifulSoup(response.text)
             services = []
             for service in soup.root.device.servicelist.findAll('service'):

@@ -40,15 +40,17 @@ import dbus.mainloop.glib
 import multiprocessing
 import logging
 import sys
+import threading
+
 
 import docopt
-import upnp.discover
-import upnp.server
-import pulseaudio
+from . import upnp.discover
+from . import upnp.server
+from . import pulseaudio
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     options = docopt.docopt(__doc__, version='0.1')
 
     if not options['--host']:
@@ -59,13 +61,15 @@ def main():
         port = int(options['--port'])
 
     dlna_discover = upnp.discover.UpnpMediaRendererDiscover(host)
-    dlna_discover.search()
+    dlna_discover.startSearch(timeout=5)
 
     dlna_server = upnp.server.ThreadedDlnaServer(
         host, port, encoder=options['--encoder'])
 
     server_url = dlna_server.get_server_url()
+    dlna_discover.waitForFirstRenderer()
     upnp_devices = []
+    print "start discover"
     for upnp_device in dlna_discover.renderers:
         upnp_device.set_server_url(server_url)
         upnp_devices.append(upnp_device)
@@ -76,8 +80,10 @@ def main():
     pulse.set_upnp_devices(upnp_devices)
 
     dlna_server.set_bridges(pulse.bridges)
-    process = multiprocessing.Process(target=dlna_server.serve_forever)
-    process.start()
+    dlna_server_thread = threading.Thread(
+        target=dlna_server.serve_forever,
+     name="dlna_Server")
+    dlna_server_thread.start()
 
     try:
         mainloop = gobject.MainLoop()
